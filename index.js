@@ -1,5 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const dedent = require('dedent-js');
 const { Client, Collection, Events, GatewayIntentBits, REST, Routes } = require('discord.js');
 const { botCommandsChannelId, token } = require('./config.json');
 const { getAllCommandsAsCollection } = require('./utils.js');
@@ -27,6 +28,10 @@ client.on(Events.InteractionCreate, async interaction => {
             try {
                 await command.execute(interaction);
             } catch (error) {
+                console.error(
+                    dedent`Ran into an error when user ${interaction.user.username} ran this command: ${interaction.toString()}
+                    This was the error: ${error.stack}`
+                );
                 if (interaction.replied || interaction.deferred) {
                     await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true });
                 } else {
